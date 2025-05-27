@@ -15,7 +15,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
 ALLOWED_HOSTS = [
-    'mpenha-production.up.railway.app', # Keep your specific domain
+    'mariadapenha-production.up.railway.app', # Keep your specific domain
     'localhost',
     '127.0.0.1',
 ]
