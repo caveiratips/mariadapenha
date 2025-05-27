@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Deletar Agressor{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="my-4 text-center">Deletar Agressor</h2>
+
+    <div class="card shadow p-4">
+        <p class="lead">Tem certeza que deseja deletar o agressor <strong>{{ object.nome_agressor }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="text-end mt-3">
+                <a href="{% url 'vitima-detail' object.vitima.pk %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-2"></i>Deletar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

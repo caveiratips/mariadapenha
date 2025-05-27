@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load form_filters %}
+{% block title %}{{ form.instance.pk|yesno:"Editar Vítima,Nova Vítima" }}{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h2 class="my-4 text-center">
+        {{ form.instance.pk|yesno:"Editar Vítima,Nova Vítima" }}
+    </h2>
+
+    <div class="card shadow p-4">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Card: Informações Gerais e Processo -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações Gerais e Processo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.data.id_for_label }}">{{ form.data.label }}</label>
+                                {{ form.data|add_class:"form-control" }}
+                                {% for error in form.data.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.numero_processo.label }}</label>
+                                <input type="text" name="numero_processo" class="form-control" value="{{ form.numero_processo.value|default:'' }}">
+                                {% for error in form.numero_processo.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Período da Medida Protetiva -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Período da Medida Protetiva</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.data_inicial_medida.id_for_label }}">{{ form.data_inicial_medida.label }}</label>
+                                {{ form.data_inicial_medida|add_class:"form-control" }}
+                                {% for error in form.data_inicial_medida.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.validade_da_medida.id_for_label }}">{{ form.validade_da_medida.label }}</label>
+                                {{ form.validade_da_medida|add_class:"form-control" }}
+                                <small class="form-text text-muted">Deixe em branco para validade indeterminada.</small>
+                                {% for error in form.validade_da_medida.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Dados da Vítima -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Dados da Vítima</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.nome_vitima.label }}</label>
+                                <input type="text" name="nome_vitima" class="form-control" value="{{ form.nome_vitima.value|default:'' }}">
+                                {% for error in form.nome_vitima.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.data_nascimento.id_for_label }}">{{ form.data_nascimento.label }}</label>
+                                {{ form.data_nascimento|add_class:"form-control" }}
+                                {% for error in form.data_nascimento.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.cpf.label }}</label>
+                                <input type="text" name="cpf" class="form-control" value="{{ form.cpf.value|default:'' }}">
+                                {% for error in form.cpf.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.parentesco.id_for_label }}">{{ form.parentesco.label }}</label>
+                                {{ form.parentesco|add_class:"form-select" }}
+                                {% for error in form.parentesco.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3" id="outro_parentesco_div" style="display: none;">
+                                <label class="form-label fw-bold">{{ form.outro_parentesco.label }}</label>
+                                <input type="text" name="outro_parentesco" id="id_outro_parentesco" class="form-control" value="{{ form.outro_parentesco.value|default:'' }}">
+                                {% for error in form.outro_parentesco.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.perfil_vitima.id_for_label }}">{{ form.perfil_vitima.label }}</label>
+                                {{ form.perfil_vitima|add_class:"form-select" }}
+                                {% for error in form.perfil_vitima.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Endereço da Vítima -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Endereço da Vítima</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.municipio.id_for_label }}">{{ form.municipio.label }}</label>
+                                {{ form.municipio|add_class:"form-select" }}
+                                {% for error in form.municipio.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.bairro.label }}</label>
+                                <input type="text" name="bairro" class="form-control" value="{{ form.bairro.value|default:'' }}">
+                                {% for error in form.bairro.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.rua.label }}</label>
+                                <input type="text" name="rua" class="form-control" value="{{ form.rua.value|default:'' }}">
+                                {% for error in form.rua.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.zona.id_for_label }}">{{ form.zona.label }}</label>
+                                {{ form.zona|add_class:"form-select" }}
+                                {% for error in form.zona.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Localização Geográfica -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Localização Geográfica</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.latitude.label }}</label>
+                                <input type="text" name="latitude" class="form-control" value="{{ form.latitude.value|default:'' }}">
+                                {% for error in form.latitude.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.longitude.label }}</label>
+                                <input type="text" name="longitude" class="form-control" value="{{ form.longitude.value|default:'' }}">
+                                {% for error in form.longitude.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Dados do Agressor -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Dados do Agressor</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.nome_agressor.label }}</label>
+                                <input type="text" name="nome_agressor" class="form-control" value="{{ form.nome_agressor.value|default:'' }}">
+                                {% for error in form.nome_agressor.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.perfil_agressor.id_for_label }}">{{ form.perfil_agressor.label }}</label>
+                                {{ form.perfil_agressor|add_class:"form-select" }}
+                                {% for error in form.perfil_agressor.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Detalhes da Ocorrência -->
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Detalhes da Ocorrência</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.classificacao.id_for_label }}">{{ form.classificacao.label }}</label>
+                                {{ form.classificacao|add_class:"form-select" }}
+                                {% for error in form.classificacao.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.tipo_agressao.id_for_label }}">{{ form.tipo_agressao.label }}</label>
+                                {{ form.tipo_agressao|add_class:"form-select" }}
+                                {% for error in form.tipo_agressao.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" for="{{ form.situacao_visita.id_for_label }}">{{ form.situacao_visita.label }}</label>
+                                {{ form.situacao_visita|add_class:"form-select" }}
+                                {% for error in form.situacao_visita.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ form.historico.label }}</label>
+                                <textarea name="historico" class="form-control" rows="4">{{ form.historico.value|default:'' }}</textarea>
+                                {% for error in form.historico.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-3">
+                <a href="{% url 'vitima-list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var selectParentesco = document.getElementById("id_parentesco");
+        var divOutroParentesco = document.getElementById("outro_parentesco_div");
+        var inputOutroParentesco = document.getElementById("id_outro_parentesco");
+
+        function toggleOutroField() {
+            // Converte o valor selecionado para minúsculas antes de comparar
+            if (selectParentesco.value.toLowerCase() === "outro") {
+                divOutroParentesco.style.display = "block";
+                inputOutroParentesco.required = true;  // Torna o campo obrigatório
+            } else {
+                divOutroParentesco.style.display = "none";
+                inputOutroParentesco.value = "";  // Limpa o valor do campo
+                inputOutroParentesco.required = false;  // Remove a obrigatoriedade
+            }
+        }
+
+        selectParentesco.addEventListener("change", toggleOutroField);
+        toggleOutroField();  // Executa na carga inicial para definir o estado correto
+    });
+</script>
+
+{% endblock %}

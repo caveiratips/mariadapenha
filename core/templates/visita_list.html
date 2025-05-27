@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Visitas{% endblock %}
+{% block content %}
+
+    <h2><i class="bi bi-calendar-check"></i> Visitas de {{ vitima.nome_vitima }}</h2>
+
+    <!-- Botão para adicionar uma nova visita -->
+    <a href="{% url 'visita-create' vitima.pk %}" class="btn btn-success mb-3">
+        <i class="bi bi-plus-circle"></i> Adicionar Visita
+    </a>
+
+    <ul>
+        {% for visita in visitas %}
+            <li>
+                <a href="{% url 'visita-detail' visita.pk %}">Visita em {{ visita.data|date:"d/m/Y" }}</a> - {{ visita.get_classificacao_display }}
+            </li>
+        {% empty %}
+            <li class="text-muted">Nenhuma visita registrada.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Botão para voltar para os detalhes da vítima -->
+    <a href="{% url 'vitima-detail' vitima.pk %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar para detalhes da vítima
+    </a>
+
+{% endblock %}

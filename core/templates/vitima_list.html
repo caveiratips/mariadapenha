@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load url_helpers %}
+
+{% block title %}Vítimas - Patrulha Maria da Penha{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="page-title"><i class="bi bi-person-lines-fill text-primary me-2"></i>Vítimas Cadastradas</h2>
+            <p class="text-muted mb-0">Gerenciamento de vítimas atendidas pela Patrulha Maria da Penha</p>
+        </div>
+        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+            <a href="{% url 'vitima-create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Nova Vítima
+            </a>
+        </div>
+    </div>
+    
+    <!-- Mensagens do sistema -->
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Filtros e pesquisa -->
+    <div class="filter-card mb-4">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" name="q" class="form-control" placeholder="Pesquisar por Nome ou CPF..." value="{{ request.GET.q }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="municipio" class="form-select">
+                            <option value="">Filtrar por Município</option>
+                            {% for codigo, nome in municipios %}
+                                <option value="{{ codigo }}" {% if request.GET.municipio and request.GET.municipio|stringformat:"s" == codigo|stringformat:"s" %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="classificacao" class="form-select">
+                            <option value="">Filtrar por Classificação</option>
+                            {% for codigo, nome in classificacoes %}
+                                <option value="{{ codigo }}" {% if request.GET.classificacao and request.GET.classificacao|stringformat:"s" == codigo|stringformat:"s" %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="status" class="form-select">
+                            <option value="">Filtrar por Status</option>
+                            {% for codigo, nome in status_options %}
+                                <option value="{{ codigo }}" {% if request.GET.status and request.GET.status|stringformat:"s" == codigo|stringformat:"s" %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel me-1"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Vítimas -->
+<div class="table-container">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0"><i class="bi bi-table me-2"></i>Lista de Vítimas</h5>
+            <span class="badge bg-primary">Total: {{ page_obj.paginator.count }}</span>
+        </div>
+        <div class="card-body p-0">
+            {% if vitimas %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 custom-table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-3">ID</th>
+                            <th>Nome</th>
+                            <th>Município</th>
+                            <th>Classificação</th>
+                            <th>Situação</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vitima in vitimas %}
+                        <tr>
+                            <td class="ps-3">{{ vitima.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle {% if vitima.classificacao == 'GRAVÍSSIMO' %}bg-danger{% elif vitima.classificacao == 'GRAVE' %}bg-warning{% elif vitima.classificacao == 'MÉDIO' %}bg-primary{% else %}bg-success{% endif %} text-white me-2">
+                                        {{ vitima.nome_vitima|first }}
+                                    </div>
+                                    <span>{{ vitima.nome_vitima }}</span>
+                                </div>
+                            </td>
+                            <td>{{ vitima.get_municipio_display }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if vitima.classificacao == 'GRAVÍSSIMO' %}bg-danger
+                                    {% elif vitima.classificacao == 'GRAVE' %}bg-warning text-dark
+                                    {% elif vitima.classificacao == 'MÉDIO' %}bg-primary
+                                    {% else %}bg-success{% endif %}">
+                                    {{ vitima.get_classificacao_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-pill">{{ vitima.situacao_visita }}</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons text-center">
+                                    <a href="{% url 'vitima-detail' vitima.pk %}" class="btn btn-sm btn-outline-primary" title="Visualizar">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'vitima-edit' vitima.pk %}" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'visita-list' vitima.pk %}" class="btn btn-sm btn-outline-success" title="Visitas">
+                                        <i class="bi bi-calendar-check"></i>
+                                    </a>
+                                    <a href="{% url 'vitima-delete' vitima.pk %}" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="bi bi-search fs-1 text-muted mb-3"></i>
+                                    <h5>Nenhuma vítima encontrada</h5>
+                                    <p class="text-muted">Tente ajustar os filtros ou adicione uma nova vítima.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <i class="bi bi-people fs-1 text-muted mb-3"></i>
+                    <h5>Nenhuma vítima cadastrada</h5>
+                    <p class="text-muted">Clique no botão abaixo para adicionar a primeira vítima.</p>
+                    <a href="{% url 'vitima-create' %}" class="btn btn-primary mt-2">
+                        <i class="bi bi-plus-circle me-1"></i> Nova Vítima
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Paginação -->
+{% if vitimas %}
+<nav aria-label="Paginação" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{% param_replace request=request page=1 %}">Primeira</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?{% param_replace request=request page=page_obj.previous_page_number %}">
+                    <i class="bi bi-chevron-left"></i> Anterior
+                </a>
+            </li>
+        {% endif %}
+        
+        <li class="page-item disabled">
+            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{% param_replace request=request page=page_obj.next_page_number %}">
+                    Próxima <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?{% param_replace request=request page=page_obj.paginator.num_pages %}">Última</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

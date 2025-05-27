@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load form_filters %}
+{% block title %}{{ form.instance.pk|yesno:"Editar Visita,Nova Visita" }}{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-calendar2-event-fill fs-3 me-3"></i>
+                    <h3 class="mb-0">{{ form.instance.pk|yesno:"Editar Visita,Nova Visita" }}</h3>
+                </div>
+
+                <div class="card-body">
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger d-flex align-items-center mb-4">
+                        <i class="bi bi-exclamation-octagon-fill me-3 fs-4"></i>
+                        <div>
+                            <h5 class="alert-heading">Erros no formulário:</h5>
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" name="data" class="form-control" value="{{ form.data.value|date:'Y-m-d' }}">
+                                    <label>{{ form.data.label }}</label>
+                                    {% for error in form.data.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    {{ form.situacao|add_class:"form-select" }}
+                                    <label>{{ form.situacao.label }}</label>
+                                    {% for error in form.situacao.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.classificacao|add_class:"form-select" }}
+                                    <label>{{ form.classificacao.label }}</label>
+                                    {% for error in form.classificacao.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    {{ form.descumprimento_medida|add_class:"form-select" }}
+                                    <label>{{ form.descumprimento_medida.label }}</label>
+                                    {% for error in form.descumprimento_medida.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4" id="mike_div" style="display: none;">
+                            <label class="form-label fw-bold" for="{{ form.mike.id_for_label }}">
+                                <i class="bi bi-person-badge me-2"></i>{{ form.mike.label }}
+                            </label>
+                            {{ form.mike|add_class:"form-control" }}
+                            {% if form.mike.help_text %}
+                            <div class="form-text">{{ form.mike.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.mike.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4" id="desfecho_div" style="display: none;">
+                            <label class="form-label fw-bold" for="{{ form.desfecho.id_for_label }}">
+                                <i class="bi bi-card-list me-2"></i>{{ form.desfecho.label }}
+                            </label>
+                            {{ form.desfecho|add_class:"form-select" }}
+                            {% if form.desfecho.help_text %}
+                            <div class="form-text">{{ form.desfecho.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.desfecho.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-journal-text me-2"></i>{{ form.historico.label }}
+                            </label>
+                            <textarea 
+                                name="{{ form.historico.name }}" 
+                                class="form-control" 
+                                rows="4"
+                                {% if form.historico.field.required %}required{% endif %}
+                            >{{ form.historico.value|default:'' }}</textarea>
+                            {% if form.historico.help_text %}
+                            <div class="form-text">{{ form.historico.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.historico.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end border-top pt-4">
+                            {% if form.instance.pk %}
+                            <a href="{% url 'vitima-detail' form.instance.vitima.pk %}" 
+                               class="btn btn-lg btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            {% else %}
+                            <a href="{% url 'vitima-list' %}" 
+                               class="btn btn-lg btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            {% endif %}
+                            <button type="submit" class="btn btn-lg btn-primary">
+                                <i class="bi bi-save2 me-2"></i>Salvar Visita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+  'use strict'
+  const forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})();
+
+// Função para mostrar/ocultar os campos relacionados ao descumprimento
+function toggleDescumprimentoFields() {
+    var descumprimentoField = document.getElementById("id_descumprimento_medida");
+    var mikeDiv = document.getElementById("mike_div");
+    var mikeInput = document.getElementById("id_mike");
+    var desfechoDiv = document.getElementById("desfecho_div");
+    var desfechoSelect = document.getElementById("id_desfecho");
+
+    if (descumprimentoField.value === "SIM_COM_CONDUCAO") {
+        mikeDiv.style.display = "block";
+        if (mikeInput) {
+            mikeInput.required = true;
+            mikeInput.disabled = false; // Garante que o campo está habilitado
+        }
+        
+        desfechoDiv.style.display = "block";
+        if (desfechoSelect) {
+            desfechoSelect.required = true;
+            desfechoSelect.disabled = false; // Garante que o campo está habilitado
+        }
+    } else {
+        mikeDiv.style.display = "none";
+        if (mikeInput) {
+            mikeInput.required = false;
+            mikeInput.disabled = true; // Desabilita quando oculto
+            mikeInput.value = ""; // Limpa o valor
+        }
+        
+        desfechoDiv.style.display = "none";
+        if (desfechoSelect) {
+            desfechoSelect.required = false;
+            desfechoSelect.disabled = true; // Desabilita quando oculto
+            desfechoSelect.value = ""; // Limpa o valor
+        }
+    }
+}
+
+// Configura o evento de mudança no campo de descumprimento
+document.addEventListener("DOMContentLoaded", function () {
+    var descumprimentoField = document.getElementById("id_descumprimento_medida");
+    if (descumprimentoField) {
+        descumprimentoField.addEventListener("change", toggleDescumprimentoFields);
+    }
+    // Executa na carga inicial para definir o estado correto dos campos
+    toggleDescumprimentoFields();
+});
+</script>
+
+{% endblock %}

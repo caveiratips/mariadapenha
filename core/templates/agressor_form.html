@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load form_filters %}
+{% block title %}Novo Agressor{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-person-fill fs-3 me-3"></i>
+                    <h3 class="mb-0">Novo Agressor</h3>
+                </div>
+
+                <div class="card-body">
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger d-flex align-items-center mb-4">
+                        <i class="bi bi-exclamation-octagon-fill me-3 fs-4"></i>
+                        <div>
+                            <h5 class="alert-heading">Erros no formulário:</h5>
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" name="{{ form.data_inicial_medida.name }}" id="{{ form.data_inicial_medida.id_for_label }}" class="form-control" value="{{ form.data_inicial_medida.value|date:'Y-m-d' }}">
+                                    <label for="{{ form.data_inicial_medida.id_for_label }}">{{ form.data_inicial_medida.label }}</label>
+                                    {% for error in form.data_inicial_medida.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" name="{{ form.data_final_medida.name }}" id="{{ form.data_final_medida.id_for_label }}" class="form-control" value="{{ form.data_final_medida.value|date:'Y-m-d' }}">
+                                    <label for="{{ form.data_final_medida.id_for_label }}">{{ form.data_final_medida.label }}</label>
+                                    {% for error in form.data_final_medida.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="{{ form.numero_processo.name }}" id="{{ form.numero_processo.id_for_label }}" class="form-control" value="{{ form.numero_processo.value|default:'' }}">
+                                    <label for="{{ form.numero_processo.id_for_label }}">{{ form.numero_processo.label }}</label>
+                                    {% for error in form.numero_processo.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    <input type="text" name="{{ form.nome_agressor.name }}" id="{{ form.nome_agressor.id_for_label }}" class="form-control" value="{{ form.nome_agressor.value|default:'' }}">
+                                    <label for="{{ form.nome_agressor.id_for_label }}">{{ form.nome_agressor.label }}</label>
+                                    {% for error in form.nome_agressor.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.parentesco|add_class:"form-select" }}
+                                    <label for="{{ form.parentesco.id_for_label }}">{{ form.parentesco.label }}</label>
+                                    {% for error in form.parentesco.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    {{ form.perfil_agressor|add_class:"form-select" }}
+                                    <label for="{{ form.perfil_agressor.id_for_label }}">{{ form.perfil_agressor.label }}</label>
+                                    {% for error in form.perfil_agressor.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    {{ form.tipo_agressao|add_class:"form-select" }}
+                                    <label for="{{ form.tipo_agressao.id_for_label }}">{{ form.tipo_agressao.label }}</label>
+                                    {% for error in form.tipo_agressao.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-journal-text me-2"></i>{{ form.resumo_dos_fatos.label }}
+                            </label>
+                            <textarea 
+                                name="{{ form.resumo_dos_fatos.name }}" 
+                                class="form-control" 
+                                rows="4"
+                                {% if form.resumo_dos_fatos.field.required %}required{% endif %}
+                            >{{ form.resumo_dos_fatos.value|default:'' }}</textarea>
+                            {% if form.resumo_dos_fatos.help_text %}
+                            <div class="form-text">{{ form.resumo_dos_fatos.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.resumo_dos_fatos.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end border-top pt-4">
+                            <a href="{% url 'vitima-detail' view.kwargs.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-lg btn-primary">
+                                <i class="bi bi-save2 me-2"></i>Salvar Agressor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+  'use strict'
+  const forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+
+{% endblock %}

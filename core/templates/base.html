@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema Maria da Penha{% endblock %}</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=3">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="{% static 'core/img/logo.png' %}" alt="Maria da Penha" class="sidebar-logo">
+                    <h3>Maria da Penha</h3>
+                </div>
+                <button type="button" id="sidebarCollapseBtn" class="btn btn-link text-light d-md-none">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="sidebar-item {% if request.path == '/' %}active{% endif %}">
+                    <a href="{% url 'vitima-list' %}"><i class="bi bi-house-door"></i> Início</a>
+                </li>
+                <li class="sidebar-item {% if '/vitima' in request.path %}active{% endif %}">
+                    <a href="{% url 'vitima-list' %}"><i class="bi bi-person"></i> Vítimas</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'vitima-create' %}"><i class="bi bi-person-plus"></i> Nova Vítima</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="sidebar-item mt-5">
+                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link text-light p-0" style="width: 100%; text-align: left; padding: 12px 20px !important;">
+                            <i class="bi bi-box-arrow-right"></i> Sair
+                        </button>
+                    </form>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content" class="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="navbar-text ms-3 d-none d-md-block">
+                        {% if user.is_authenticated %}
+                            <i class="bi bi-person-circle"></i> Olá, {{ user.username }}
+                        {% endif %}
+                    </span>
+                </div>
+            </nav>
+
+            <div class="container-fluid py-4">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <!-- Rodapé -->
+            <footer class="text-muted py-3 mt-auto">
+                <div class="container">
+                    <p class="mb-0 text-center">© 2025 - Patrulha Maria da Penha</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarCollapse = document.getElementById('sidebarCollapse');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (sidebarCollapse) {
+                sidebarCollapse.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            if (sidebarCollapseBtn) {
+                sidebarCollapseBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Esconder o sidebar em dispositivos móveis por padrão
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('active');
+            }
+            
+            // Inicializar datepickers
+            flatpickr(".datepicker, [type='date']", {
+                dateFormat: "d/m/Y", // Formato visível para o usuário
+                altInput: true,      // Cria um input alternativo visível
+                altFormat: "Y-m-d",  // Formato para o input original (submetido ao Django)
+                allowInput: true,    // Permite digitação no input alternativo
+                locale: "pt"
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,5 @@
+venv
+.aider*
+core/management/commands/bancodados.csv
+.repomix-output.xml
+db.sqlite3

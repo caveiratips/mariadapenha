@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Detalhes da Visita{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h2 class="my-4 text-center">Detalhes da Visita</h2>
+
+    <!-- Card com informações da visita -->
+    <div class="card shadow p-4">
+        <div class="card-body">
+            <h4 class="card-title">Visita em {{ visita.data|date:"d/m/Y" }}</h4>
+            <h6 class="card-subtitle text-muted">Vítima: {{ visita.vitima.nome_vitima }}</h6>
+            <hr>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Classificação:</strong> 
+                        <span class="badge 
+                            {% if visita.classificacao == 'GRAVISSIMO' %}bg-danger
+                            {% elif visita.classificacao == 'GRAVE' %}bg-warning
+                            {% elif visita.classificacao == 'MEDIO' %}bg-primary
+                            {% else %}bg-success{% endif %}">
+                            {{ visita.get_classificacao_display }}
+                        </span>
+                    </p>
+                    <p><strong>Situação:</strong> {{ visita.get_situacao_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Data da Visita:</strong> {{ visita.data|date:"d/m/Y" }}</p>
+
+                    <!-- Descumprimento de Medida -->
+                    <p><strong>Descumprimento de Medida:</strong> 
+                        {{ visita.get_descumprimento_medida_display }}
+                    </p>
+
+                    <!-- Campos Mike e Desfecho (se houver descumprimento com condução) -->
+                    {% if visita.descumprimento_medida == 'SIM_COM_CONDUCAO' %}
+                        {% if visita.mike %}
+                        <p><strong>Mike:</strong> 
+                            {{ visita.mike }}
+                        </p>
+                        {% endif %}
+                        {% if visita.desfecho %}
+                        <p><strong>Desfecho:</strong> 
+                            {{ visita.get_desfecho_display }}
+                        </p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <p class="mt-3"><strong>Histórico da Visita:</strong></p>
+            <p class="text-muted">{{ visita.historico }}</p>
+
+            <!-- Botões de ação -->
+            <div class="text-end mt-3">
+                <a href="{% url 'visita-edit' visita.pk %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'visita-delete' visita.pk %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Excluir
+                </a>
+                <a href="{% url 'vitima-detail' visita.vitima.pk %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

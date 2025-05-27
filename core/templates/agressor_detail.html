@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Detalhes do Agressor{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-person-fill fs-3 me-3"></i>
+                    <h3 class="mb-0">Detalhes do Agressor</h3>
+                </div>
+
+                <div class="card-body">
+                    <h4>Informações do Agressor</h4>
+                    <p><strong>Nome:</strong> {{ agressor.nome_agressor }}</p>
+                    <p><strong>Número do Processo:</strong> {{ agressor.numero_processo }}</p>
+                    <p><strong>Data Inicial da Medida:</strong> {{ agressor.data_inicial_medida|date:"d/m/Y" }}</p>
+                    {% if agressor.data_final_medida %}
+                    <p><strong>Data Final da Medida:</strong> {{ agressor.data_final_medida|date:"d/m/Y" }}</p>
+                    {% endif %}
+                    <p><strong>Parentesco:</strong> {{ agressor.get_parentesco_display }}</p>
+                    <p><strong>Perfil do Agressor:</strong> {{ agressor.get_perfil_agressor_display }}</p>
+                    <p><strong>Tipo de Agressão:</strong> {{ agressor.get_tipo_agressao_display }}</p>
+                    <p><strong>Resumo dos Fatos:</strong> {{ agressor.resumo_dos_fatos }}</p>
+
+                    <div class="d-flex gap-3 justify-content-end border-top pt-4">
+                        <a href="{% url 'vitima-detail' agressor.vitima.pk %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Voltar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

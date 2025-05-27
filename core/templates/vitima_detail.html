@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% block title %}Detalhes de {{ vitima.nome_vitima }}{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-10">
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-lg border-primary h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i> Informações Pessoais</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4 col-md-3 text-muted">Nome:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.nome_vitima }}</dd>
+                    
+                                <dt class="col-sm-4 col-md-3 text-muted">CPF:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.cpf }}</dd>
+                    
+                                <dt class="col-sm-4 col-md-3 text-muted">Endereço:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.rua }}, {{ vitima.bairro }}</dd>
+                    
+                                <dt class="col-sm-4 col-md-3 text-muted">Município:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.get_municipio_display }}</dd>
+                    
+                                <dt class="col-sm-4 col-md-3 text-muted">Zona:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.get_zona_display }}</dd>
+                    
+                                <dt class="col-sm-4 col-md-3 text-muted">Parentesco:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.get_parentesco_display }}</dd>
+                    
+                                <dt class="col-sm-4 col-md-3 text-muted">Perfil:</dt>
+                                <dd class="col-sm-8 col-md-9">{{ vitima.get_perfil_vitima_display }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-lg border-primary h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-file-earmark-text-fill me-2"></i> Dados do Processo</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4 text-muted">Número:</dt>
+                                <dd class="col-sm-8">{{ vitima.numero_processo }}</dd>
+
+                                <dt class="col-sm-4 text-muted">Data do Cadastro:</dt>
+                                <dd class="col-sm-8">{{ vitima.data|date:"d/m/Y" }}</dd>
+
+                                {% if vitima.data_inicial_medida %}
+                                <dt class="col-sm-4 text-muted">Data Inicial da Medida:</dt>
+                                <dd class="col-sm-8">{{ vitima.data_inicial_medida|date:"d/m/Y" }}</dd>
+                                {% endif %}
+
+                                {% if vitima.validade_da_medida %}
+                                <dt class="col-sm-4 text-muted">Data de Validade da Medida:</dt>
+                                <dd class="col-sm-8">{{ vitima.validade_da_medida|date:"d/m/Y" }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-lg border-danger mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> Informações do Agressor e Resumo dos Fatos</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted">Nome:</dt>
+                        <dd class="col-sm-8">{{ vitima.nome_agressor }}</dd>
+            
+                        <dt class="col-sm-4 text-muted">Perfil:</dt>
+                        <dd class="col-sm-8">{{ vitima.get_perfil_agressor_display }}</dd>
+            
+                        <dt class="col-sm-4 text-muted">Agressão:</dt>
+                        <dd class="col-sm-8">{{ vitima.get_tipo_agressao_display }}</dd>
+            
+                        <dt class="col-sm-4 text-muted">Classificação:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge 
+                                {% if vitima.classificacao == 'GRAVÍSSIMO' %}bg-danger
+                                {% elif vitima.classificacao == 'GRAVE' %}bg-warning
+                                {% elif vitima.classificacao == 'MÉDIO' %}bg-primary
+                                {% else %}bg-success
+                                {% endif %}">
+                                {{ vitima.get_classificacao_display }}
+                            </span>
+                        </dd>
+                    </dl>
+            
+                    <h6 class="text-primary mt-3"><i class="bi bi-journal-text me-2"></i> Resumo dos Fatos</h6>
+                    <div class="border p-3 rounded-3">
+                        <p class="mb-0">{{ vitima.historico|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="card shadow-lg border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-geo-alt-fill me-2"></i> Coordenadas</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-6 text-muted">Latitude:</dt>
+                                <dd class="col-6">{{ vitima.latitude }}</dd>
+
+                                <dt class="col-6 text-muted">Longitude:</dt>
+                                <dd class="col-6">{{ vitima.longitude }}</dd>
+
+                                <div class="border rounded-3 overflow-hidden">
+                                    <div id="map" 
+                                    data-latitude="{{ vitima.latitude }}" 
+                                    data-longitude="{{ vitima.longitude }}" 
+                                    style="height: 500px;">
+                                    </div>
+                                </div>
+                            </dl>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="d-flex gap-2 justify-content-end border-top pt-4">
+                <a href="{% url 'vitima-list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Voltar
+                </a>
+                <a href="{% url 'vitima-edit' vitima.pk %}" class="btn btn-warning">
+                    <i class="bi bi-pencil-square me-2"></i>Editar
+                </a>
+                <a href="{% url 'vitima-delete' vitima.pk %}" class="btn btn-danger">
+                    <i class="bi bi-trash3 me-2"></i>Excluir
+                </a>
+            </div>
+
+            <div class="card shadow-lg mt-4">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-calendar2-event-fill me-2"></i> Histórico de Visitas</h4>
+                    <a href="{% url 'visita-create' vitima.pk %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle me-2"></i>Nova Visita
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if vitima.visitas.all %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Classificação</th>
+                                        <th>Situação</th>
+                                        <th>Agressor</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for visita in vitima.visitas.all %}
+                                        <tr>
+                                            <td>{{ visita.data|date:"d/m/Y" }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if visita.classificacao == 'GRAVÍSSIMO' %}bg-danger
+                                                    {% elif visita.classificacao == 'GRAVE' %}bg-warning
+                                                    {% elif visita.classificacao == 'MÉDIO' %}bg-primary
+                                                    {% else %}bg-success
+                                                    {% endif %}">
+                                                    {{ visita.get_classificacao_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ visita.get_situacao_display }}</td>
+                                            <td>{{ vitima.nome_agressor }}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <a href="{% url 'visita-detail' visita.pk %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <a href="{% url 'visita-edit' visita.pk %}" class="btn btn-sm btn-outline-warning">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="{% url 'visita-delete' visita.pk %}" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>Nenhuma visita registrada
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-lg mt-4">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i> Outros Agressores</h4>
+                    <a href="{% url 'agressor-create' vitima.pk %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle me-2"></i>Novo Agressor
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if vitima.agressores.all %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Número do Processo</th>
+                                        <th>Data do Caso</th>
+                                        <th>Parentesco</th>
+                                        <th>Perfil</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for agressor in vitima.agressores.all %}
+                                        <tr>
+                                            <td>{{ agressor.nome_agressor }}</td>
+                                            <td>{{ agressor.numero_processo }}</td>
+                                            <td>{{ agressor.data_do_caso|date:"d/m/Y" }}</td>
+                                            <td>{{ agressor.get_parentesco_display }}</td>
+                                            <td>{{ agressor.get_perfil_agressor_display }}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <a href="{% url 'agressor-detail' agressor.pk %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <a href="{% url 'agressor-edit' agressor.pk %}" class="btn btn-sm btn-outline-warning">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="{% url 'agressor-delete' agressor.pk %}" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>A vítima não possui outros agressores
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </br>
+    </div>
+</div>
+
+<script>
+    function initMap() {
+        // Obtém o elemento do mapa
+        const mapElement = document.getElementById("map");
+
+        // Lê as coordenadas dos atributos data-*
+        const latitude = parseFloat(mapElement.getAttribute("data-latitude").replace(',', '.'));
+        const longitude = parseFloat(mapElement.getAttribute("data-longitude").replace(',', '.'));
+
+        // Verifica se as coordenadas são válidas
+        if (isNaN(latitude) || isNaN(longitude)) {
+            mapElement.innerHTML = '<div class="alert alert-danger m-3">Coordenadas inválidas</div>';
+            return;
+        }
+
+        // Inicializa o mapa
+        const map = new google.maps.Map(mapElement, {
+            zoom: 15,
+            center: { lat: latitude, lng: longitude },
+            mapTypeControl: false,
+            streetViewControl: false
+        });
+
+        // Adiciona um marcador no mapa
+        new google.maps.Marker({
+            position: { lat: latitude, lng: longitude },
+            map: map,
+            title: "Localização da Vítima"
+        });
+    }
+</script>
+
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGdhpcrk28CZ4UKm_L2rSpWCm3gEFGSQI&callback=initMap">
+</script>
+
+{% endblock %}
