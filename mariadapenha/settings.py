@@ -1,23 +1,17 @@
 from pathlib import Path
 import os
-from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-3mg@k9&pe4s(vt(c*d9cqt4nh+#h+6nk8u9!rd%hoyq3_d$6ka')
+SECRET_KEY = 'django-insecure-3mg@k9&pe4s(vt(c*d9cqt4nh+#h+6nk8u9!rd%hoyq3_d$6ka'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+# ATENÇÃO: Configurações para DEBUG - usar apenas temporariamente
+DEBUG = True
 
-# Allowed hosts for your server
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'seu-dominio.com',  # Adicione seu domínio aqui
-    'seu-ip-do-servidor',  # Adicione o IP do seu servidor aqui
-]
+# Permitir todos os hosts (TEMPORÁRIO)
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -62,11 +56,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mariadapenha.wsgi.application'
 
-# Database
+# Database - SQLite com persistência
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'data' / 'db.sqlite3',
     }
 }
 
@@ -105,19 +99,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Security settings para produção
-if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
-    SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+# Configurações relaxadas para debug
+CSRF_TRUSTED_ORIGINS = ['*']
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
 
-# CSRF settings
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8002',
-    'http://127.0.0.1:8002',
-    # Adicione seu domínio aqui se usar HTTPS
-    # 'https://seu-dominio.com',
-]
+# Desabilitar proteções de segurança temporariamente
+SECURE_BROWSER_XSS_FILTER = False
+SECURE_CONTENT_TYPE_NOSNIFF = False
+X_FRAME_OPTIONS = 'SAMEORIGIN'
