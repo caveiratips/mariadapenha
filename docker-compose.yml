@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mariadapenha:
+    build: .
+    container_name: mariadapenha_app
+    ports:
+      - "8002:8002"
+    environment:
+      - DJANGO_DEBUG=False
+      - DJANGO_SECURE_SSL_REDIRECT=False
+      - DJANGO_SESSION_COOKIE_SECURE=False
+      - DJANGO_CSRF_COOKIE_SECURE=False
+    volumes:
+      - ./db.sqlite3:/app/db.sqlite3
+      - ./staticfiles:/app/staticfiles
+    restart: unless-stopped
+    networks:
+      - mariadapenha_network
+
+networks:
+  mariadapenha_network:
+    driver: bridge

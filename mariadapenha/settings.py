@@ -1,30 +1,25 @@
 from pathlib import Path
 import os
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3mg@k9&pe4s(vt(c*d9cqt4nh+#h+6nk8u9!rd%hoyq3_d$6ka'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-3mg@k9&pe4s(vt(c*d9cqt4nh+#h+6nk8u9!rd%hoyq3_d$6ka')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
-RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+# Allowed hosts for your server
 ALLOWED_HOSTS = [
-    'mariadapenha-production.up.railway.app', # Keep your specific domain
     'localhost',
     '127.0.0.1',
+    'seu-dominio.com',  # Adicione seu domínio aqui
+    'seu-ip-do-servidor',  # Adicione o IP do seu servidor aqui
 ]
-if RAILWAY_PUBLIC_DOMAIN:
-    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
-
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -32,13 +27,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic', # Add this for simplified static file handling in development
+    'whitenoise.runserver_nostatic',
     'core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <<< ADD THIS LINE HERE
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,10 +62,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mariadapenha.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -78,10 +70,7 @@ DATABASES = {
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -97,16 +86,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'pt-br'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
-
 USE_TZ = True
 
 # Login/Logout URLs
@@ -115,23 +98,26 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_REDIRECT_URL = 'vitima-list'
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'  # <<< UNCOMMENT THIS LINE
-
-# This directory is where Django's collectstatic command will copy all static files
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Use Whitenoise's storage backend for efficient serving and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Optional: Add CSRF_TRUSTED_ORIGINS if needed behind proxy (usually needed for HTTPS)
-CSRF_TRUSTED_ORIGINS = [f'https://{RAILWAY_PUBLIC_DOMAIN}'] if RAILWAY_PUBLIC_DOMAIN else [f'https://mpenha-production.up.railway.app']
+# Security settings para produção
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
-# Optional: Settings for trusting proxy headers (often needed on platforms like Railway)
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
-SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'True') == 'True' # Redirect HTTP to HTTPS
-SESSION_COOKIE_SECURE = os.environ.get('DJANGO_SESSION_COOKIE_SECURE', 'True') == 'True'
-CSRF_COOKIE_SECURE = os.environ.get('DJANGO_CSRF_COOKIE_SECURE', 'True') == 'True'
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8002',
+    'http://127.0.0.1:8002',
+    # Adicione seu domínio aqui se usar HTTPS
+    # 'https://seu-dominio.com',
+]
