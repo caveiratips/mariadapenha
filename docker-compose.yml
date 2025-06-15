@@ -12,8 +12,15 @@ services:
       - DJANGO_SESSION_COOKIE_SECURE=False
       - DJANGO_CSRF_COOKIE_SECURE=False
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
-      - ./staticfiles:/app/staticfiles
+      - type: bind
+        source: ./data
+        target: /app/data
+      - type: bind
+        source: ./staticfiles
+        target: /app/staticfiles
+      - type: bind
+        source: ./logs
+        target: /app/logs
     restart: unless-stopped
     networks:
       - mariadapenha_network
