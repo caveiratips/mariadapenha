@@ -12,15 +12,9 @@ services:
       - DJANGO_SESSION_COOKIE_SECURE=False
       - DJANGO_CSRF_COOKIE_SECURE=False
     volumes:
-      - type: bind
-        source: ./data
-        target: /app/data
-      - type: bind
-        source: ./staticfiles
-        target: /app/staticfiles
-      - type: bind
-        source: ./logs
-        target: /app/logs
+      - "/mariadapenha/mariadapenha/data:/app/data"
+      - "/mariadapenha/mariadapenha/staticfiles:/app/staticfiles"
+      - "/mariadapenha/mariadapenha/logs:/app/logs"
     restart: unless-stopped
     networks:
       - mariadapenha_network
