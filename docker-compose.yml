@@ -1,9 +1,11 @@
+version: '3.8'
+
 services:
   mariadapenha:
     build: .
     container_name: mariadapenha_app
     ports:
-      - "8002:8002"
+      - "8023:8023"                
     environment:
       - DJANGO_DEBUG=False
       - DJANGO_SECURE_SSL_REDIRECT=False
@@ -12,6 +14,9 @@ services:
     restart: unless-stopped
     networks:
       - mariadapenha_network
+    volumes:
+      - ./data/db.sqlite3:/app/db.sqlite3
+
 
 networks:
   mariadapenha_network:

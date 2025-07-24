@@ -35,7 +35,7 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 # Expose port
-EXPOSE 8002
+EXPOSE 8023
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8002", "--workers", "3", "mariadapenha.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8023", "--workers", "3", "mariadapenha.wsgi:application"]

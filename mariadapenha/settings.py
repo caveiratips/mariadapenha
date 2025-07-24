@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3mg@k9&pe4s(vt(c*d9cqt4nh+#h+6nk8u9!rd%hoyq3_d$6ka'
 
 # ATENÇÃO: Configurações para DEBUG - usar apenas temporariamente
-DEBUG = True
+DEBUG = False
 
 # Permitir todos os hosts (TEMPORÁRIO)
 ALLOWED_HOSTS = ['*']
@@ -101,9 +101,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configurações relaxadas para debug
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8002',
-    'http://127.0.0.1:8002',
-    'http://92.112.176.100:8002',
+    'http://localhost:8023',
+    'http://127.0.0.1:8023',
+    'http://92.112.176.100:8023',
 ]
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
