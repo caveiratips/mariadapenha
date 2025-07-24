@@ -15,7 +15,7 @@ services:
     networks:
       - mariadapenha_network
     volumes:
-      - ./data/db.sqlite3:/app/db.sqlite3
+      - ./data:/app/data
 
 
 networks:
