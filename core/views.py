@@ -11,6 +11,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.db.models import Count
 import pandas as pd
 from unidecode import unidecode
 from datetime import datetime
@@ -136,14 +137,33 @@ def importar_dados_view(request):
     return render(request, 'importar_dados.html')
 
 @login_required
-def excluir_tudo_view(request):
-    if request.method == 'POST':
-        # Exclui todas as visitas primeiro
-        Visita.objects.all().delete()
-        # Depois exclui todas as vítimas
-        Vitima.objects.all().delete()
-        messages.success(request, "Todos os dados de vítimas e visitas foram excluídos com sucesso.")
-    return redirect('vitima-list')
+def dashboard_view(request):
+    total_vitimas = Vitima.objects.count()
+    total_visitas = Visita.objects.count()
+
+    # Agregações
+    classificacao_counts = Vitima.objects.values('classificacao').annotate(total=Count('classificacao')).order_by('-total')
+    situacao_counts = Vitima.objects.values('situacao_visita').annotate(total=Count('situacao_visita')).order_by('-total')
+    agressor_preso_counts = Vitima.objects.values('agressor_preso').annotate(total=Count('agressor_preso')).order_by('-total')
+
+    # Calcula porcentagens
+    for item in classificacao_counts:
+        item['percentual'] = (item['total'] / total_vitimas * 100) if total_vitimas > 0 else 0
+    
+    for item in situacao_counts:
+        item['percentual'] = (item['total'] / total_vitimas * 100) if total_vitimas > 0 else 0
+
+    for item in agressor_preso_counts:
+        item['percentual'] = (item['total'] / total_vitimas * 100) if total_vitimas > 0 else 0
+
+    context = {
+        'total_vitimas': total_vitimas,
+        'total_visitas': total_visitas,
+        'classificacao_counts': classificacao_counts,
+        'situacao_counts': situacao_counts,
+        'agressor_preso_counts': agressor_preso_counts,
+    }
+    return render(request, 'dashboard.html', context)
 
 # Lista todas as vítimas
 

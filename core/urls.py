@@ -6,11 +6,12 @@ from .views import (
     VisitaListView, VisitaDetailView, VisitaUpdateView, VisitaDeleteView, VisitaCreateView,
     AgressorListView, AgressorCreateView, AgressorUpdateView, AgressorDeleteView, AgressorDetailView, CustomLoginView
 )
-from .views import importar_dados_view, excluir_tudo_view
+from .views import importar_dados_view, dashboard_view
 
 urlpatterns = [
     # Home (redirecionando para a lista de vítimas)
-    path('', VitimaListView.as_view(), name='home'),
+    path('', dashboard_view, name='home'),
+    path('dashboard/', dashboard_view, name='dashboard'),
     
     # Rotas para Vítimas
     path('vitimas/', VitimaListView.as_view(), name='vitima-list'),
@@ -43,5 +44,4 @@ urlpatterns = [
 ]
 urlpatterns += [
     path('importar/', importar_dados_view, name='importar_dados'),
-    path('excluir-tudo/', excluir_tudo_view, name='excluir_tudo'),
 ]

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header mb-4">
+    <h2 class="page-title"><i class="bi bi-grid-1x2-fill text-primary me-2"></i>Dashboard de Métricas</h2>
+    <p class="text-muted">Visão geral dos dados do sistema Patrulha Maria da Penha.</p>
+</div>
+
+<!-- Cards Principais -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-primary text-white p-3 rounded-3 me-4">
+                    <i class="bi bi-people-fill fs-2"></i>
+                </div>
+                <div>
+                    <h6 class="card-subtitle text-muted">Total de Vítimas</h6>
+                    <h2 class="card-title mb-0">{{ total_vitimas }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-success text-white p-3 rounded-3 me-4">
+                    <i class="bi bi-calendar-check-fill fs-2"></i>
+                </div>
+                <div>
+                    <h6 class="card-subtitle text-muted">Total de Visitas</h6>
+                    <h2 class="card-title mb-0">{{ total_visitas }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cards de Agregação -->
+<div class="row g-4">
+    <!-- Classificação de Risco -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Classificação de Risco</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in classificacao_counts %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ item.classificacao }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ item.total }} ({{ item.percentual|floatformat:1 }}%)</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Nenhum dado de classificação.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Situação da Visita -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>Situação da Visita</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in situacao_counts %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ item.situacao_visita }}</span>
+                            <span class="badge {% if item.situacao_visita == 'ATIVA' %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">
+                                {{ item.total }} ({{ item.percentual|floatformat:1 }}%)
+                            </span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Nenhum dado de situação.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agressor Preso -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-fill-lock me-2"></i>Agressor Preso</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in agressor_preso_counts %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ item.get_agressor_preso_display }}</span>
+                            <span class="badge {% if item.agressor_preso == 'SIM' %}bg-success{% elif item.agressor_preso == 'NAO' %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill">
+                                {{ item.total }} ({{ item.percentual|floatformat:1 }}%)
+                            </span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Nenhum dado sobre prisão.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
