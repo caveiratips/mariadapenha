@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 import pandas as pd
 from unidecode import unidecode
 from datetime import datetime
+import re
 
 def get_choice_key(choices, value):
     """Função auxiliar para encontrar a chave de uma 'choice' a partir do seu valor de exibição."""
@@ -23,6 +24,17 @@ def get_choice_key(choices, value):
     for key, display_value in choices:
         if unidecode(display_value.lower()) == value_normalized:
             return key
+    return None
+
+def clean_float(value):
+    """Extrai um valor float de uma string, mesmo que contenha caracteres extras."""
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        # Usa regex para encontrar o primeiro número que parece um float/int
+        match = re.search(r'-?\d+\.?\d*', value)
+        if match:
+            return float(match.group(0))
     return None
 
 @login_required
@@ -57,9 +69,13 @@ def importar_dados_view(request):
 
                 if not vitima_existente:
                     # Cria uma nova Vítima
+                    
+                    # As opções para situacao_visita no modelo Vitima são definidas inline
+                    vitima_situacao_choices = [('ATIVA', 'Ativa'), ('INATIVA', 'Inativa')]
+
                     nova_vitima = Vitima(
-                        latitude=float(row.iloc[1]),
-                        longitude=float(row.iloc[2]),
+                        latitude=clean_float(row.iloc[1]),
+                        longitude=clean_float(row.iloc[2]),
                         numero_processo=str(row.iloc[3]),
                         municipio=get_choice_key(Vitima.MUNICIPIOS_PE, row.iloc[4]),
                         bairro=str(row.iloc[5]),
@@ -76,7 +92,7 @@ def importar_dados_view(request):
                         historico=str(row.iloc[17]),
                         classificacao=get_choice_key(Vitima.CLASSIFICACAO_CHOICES, row.iloc[18]),
                         tipo_agressao=get_choice_key(Vitima.TIPO_AGRESSÃO_CHOICES, row.iloc[19]),
-                        situacao_visita=get_choice_key(Vitima.SITUACAO_CHOICES, row.iloc[20])
+                        situacao_visita=get_choice_key(vitima_situacao_choices, row.iloc[20])
                     )
                     nova_vitima.save()
                     vítimas_criadas += 1
