@@ -90,7 +90,11 @@
                         <dd class="col-sm-8">{{ vitima.get_perfil_agressor_display }}</dd>
 
                         <dt class="col-sm-4 text-muted">Agressor Preso:</dt>
-                        <dd class="col-sm-8">{{ vitima.get_agressor_preso_display }}</dd>
+                        <dd class="col-sm-8">
+                            <span class="badge {% if vitima.agressor_preso == 'SIM' %}bg-success{% elif vitima.agressor_preso == 'NAO' %}bg-warning text-dark{% endif %}">
+                                {{ vitima.get_agressor_preso_display }}
+                            </span>
+                        </dd>
             
                         <dt class="col-sm-4 text-muted">Agressão:</dt>
                         <dd class="col-sm-8">{{ vitima.get_tipo_agressao_display }}</dd>
@@ -190,7 +194,11 @@
                                                     {{ visita.get_classificacao_display }}
                                                 </span>
                                             </td>
-                                            <td>{{ visita.get_situacao_display }}</td>
+                                            <td>
+                                               <span class="badge {% if visita.situacao == 'Ativa' %}bg-success{% elif visita.situacao == 'Inativa' %}bg-warning text-dark{% endif %}">
+                                                   {{ visita.get_situacao_display }}
+                                               </span>
+                                           </td>
                                             <td>{{ vitima.nome_agressor }}</td>
                                             <td class="text-end">
                                                 <div class="d-flex gap-2 justify-content-end">

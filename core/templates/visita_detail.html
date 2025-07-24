@@ -23,7 +23,11 @@
                             {{ visita.get_classificacao_display }}
                         </span>
                     </p>
-                    <p><strong>Situação:</strong> {{ visita.get_situacao_display }}</p>
+                    <p><strong>Situação:</strong>
+                        <span class="badge {% if visita.situacao == 'Ativa' %}bg-success{% elif visita.situacao == 'Inativa' %}bg-warning text-dark{% endif %}">
+                            {{ visita.get_situacao_display }}
+                        </span>
+                    </p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Data da Visita:</strong> {{ visita.data|date:"d/m/Y" }}</p>

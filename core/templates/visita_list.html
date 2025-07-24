@@ -12,7 +12,14 @@
     <ul>
         {% for visita in visitas %}
             <li>
-                <a href="{% url 'visita-detail' visita.pk %}">Visita em {{ visita.data|date:"d/m/Y" }}</a> - {{ visita.get_classificacao_display }}
+                <a href="{% url 'visita-detail' visita.pk %}">Visita em {{ visita.data|date:"d/m/Y" }}</a> -
+                <span class="badge {% if visita.classificacao == 'GRAVÍSSIMO' %}bg-danger{% elif visita.classificacao == 'GRAVE' %}bg-warning text-dark{% elif visita.classificacao == 'MÉDIO' %}bg-primary{% else %}bg-success{% endif %}">
+                    {{ visita.get_classificacao_display }}
+                </span>
+                -
+                <span class="badge {% if visita.situacao == 'Ativa' %}bg-success{% elif visita.situacao == 'Inativa' %}bg-warning text-dark{% endif %}">
+                    {{ visita.get_situacao_display }}
+                </span>
             </li>
         {% empty %}
             <li class="text-muted">Nenhuma visita registrada.</li>

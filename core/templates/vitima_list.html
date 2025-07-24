@@ -120,9 +120,15 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="status-pill">{{ vitima.situacao_visita }}</span>
+                                <span class="badge {% if vitima.situacao_visita == 'ATIVA' %}bg-success{% elif vitima.situacao_visita == 'INATIVA' %}bg-warning text-dark{% endif %}">
+                                    {{ vitima.situacao_visita }}
+                                </span>
                             </td>
-                            <td>{{ vitima.get_agressor_preso_display }}</td>
+                            <td>
+                                <span class="badge {% if vitima.agressor_preso == 'SIM' %}bg-success{% elif vitima.agressor_preso == 'NAO' %}bg-warning text-dark{% endif %}">
+                                    {{ vitima.get_agressor_preso_display }}
+                                </span>
+                            </td>
                             <td>
                                 <div class="action-buttons text-center">
                                     <a href="{% url 'vitima-detail' vitima.pk %}" class="btn btn-sm btn-outline-primary" title="Visualizar">
