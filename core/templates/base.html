@@ -35,6 +35,9 @@
                 <li class="sidebar-item">
                     <a href="{% url 'vitima-create' %}"><i class="bi bi-person-plus"></i> Nova Vítima</a>
                 </li>
+                <li class="sidebar-item {% if '/importar' in request.path %}active{% endif %}">
+                    <a href="{% url 'importar_dados' %}"><i class="bi bi-file-earmark-arrow-up"></i> Importar Dados</a>
+                </li>
                 {% if user.is_authenticated %}
                 <li class="sidebar-item mt-5">
                     <form action="{% url 'logout' %}" method="post" class="d-inline">

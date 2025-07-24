@@ -6,6 +6,7 @@ from .views import (
     VisitaListView, VisitaDetailView, VisitaUpdateView, VisitaDeleteView, VisitaCreateView,
     AgressorListView, AgressorCreateView, AgressorUpdateView, AgressorDeleteView, AgressorDetailView, CustomLoginView
 )
+from .views import importar_dados_view
 
 urlpatterns = [
     # Home (redirecionando para a lista de vítimas)
@@ -39,4 +40,7 @@ urlpatterns = [
     
     path('logout/', LogoutView.as_view(), name='logout'),
     
+]
+urlpatterns += [
+    path('importar/', importar_dados_view, name='importar_dados'),
 ]

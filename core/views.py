@@ -9,6 +9,102 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+import pandas as pd
+from unidecode import unidecode
+from datetime import datetime
+
+def get_choice_key(choices, value):
+    """Função auxiliar para encontrar a chave de uma 'choice' a partir do seu valor de exibição."""
+    if not isinstance(value, str):
+        return None
+    
+    value_normalized = unidecode(value.strip().lower())
+    for key, display_value in choices:
+        if unidecode(display_value.lower()) == value_normalized:
+            return key
+    return None
+
+@login_required
+def importar_dados_view(request):
+    if request.method == 'POST':
+        if 'excel_file' not in request.FILES:
+            messages.error(request, "Nenhum arquivo foi enviado.")
+            return render(request, 'importar_dados.html')
+
+        excel_file = request.FILES['excel_file']
+        try:
+            df = pd.read_excel(excel_file)
+        except Exception as e:
+            messages.error(request, f"Erro ao ler o arquivo Excel: {e}")
+            return render(request, 'importar_dados.html')
+
+        vítimas_criadas = 0
+        visitas_criadas = 0
+        erros = []
+
+        for index, row in df.iterrows():
+            try:
+                # --- Mapeamento e Limpeza dos Dados ---
+                nome_vitima_raw = row.iloc[9]
+                if pd.isna(nome_vitima_raw):
+                    continue # Pula linha se o nome da vítima estiver vazio
+                
+                nome_vitima_normalized = unidecode(str(nome_vitima_raw).strip().lower())
+
+                # --- Lógica Principal: Vítima ou Visita? ---
+                vitima_existente = Vitima.objects.filter(nome_vitima__iexact=nome_vitima_normalized).first()
+
+                if not vitima_existente:
+                    # Cria uma nova Vítima
+                    nova_vitima = Vitima(
+                        latitude=float(row.iloc[1]),
+                        longitude=float(row.iloc[2]),
+                        numero_processo=str(row.iloc[3]),
+                        municipio=get_choice_key(Vitima.MUNICIPIOS_PE, row.iloc[4]),
+                        bairro=str(row.iloc[5]),
+                        rua=str(row.iloc[6]),
+                        zona=get_choice_key(Vitima.ZONA_CHOICES, row.iloc[7]),
+                        estado='Pernambuco',
+                        nome_vitima=str(row.iloc[9]).strip(),
+                        parentesco=get_choice_key(Vitima.PARENTESCO_CHOICES, row.iloc[10]),
+                        perfil_vitima=get_choice_key(Vitima.PERFIL_VITIMA_CHOICES, row.iloc[11]),
+                        cpf=str(row.iloc[12]),
+                        data=pd.to_datetime(row.iloc[14]).date(),
+                        nome_agressor=str(row.iloc[15]),
+                        perfil_agressor=get_choice_key(Vitima.PERFIL_AGRESSOR_CHOICES, row.iloc[16]),
+                        historico=str(row.iloc[17]),
+                        classificacao=get_choice_key(Vitima.CLASSIFICACAO_CHOICES, row.iloc[18]),
+                        tipo_agressao=get_choice_key(Vitima.TIPO_AGRESSÃO_CHOICES, row.iloc[19]),
+                        situacao_visita=get_choice_key(Vitima.SITUACAO_CHOICES, row.iloc[20])
+                    )
+                    nova_vitima.save()
+                    vítimas_criadas += 1
+                else:
+                    # Cria uma nova Visita para a vítima existente
+                    nova_visita = Visita(
+                        vitima=vitima_existente,
+                        data=pd.to_datetime(row.iloc[14]).date(),
+                        situacao=get_choice_key(Visita.SITUACAO_CHOICES, row.iloc[20]),
+                        classificacao=get_choice_key(Visita.CLASSIFICACAO_CHOICES, row.iloc[18]),
+                        historico=str(row.iloc[17])
+                    )
+                    nova_visita.save()
+                    visitas_criadas += 1
+
+            except Exception as e:
+                erros.append(f"Linha {index + 2}: {e}")
+
+        # --- Feedback para o Usuário ---
+        if vítimas_criadas > 0 or visitas_criadas > 0:
+            messages.success(request, f"Importação concluída! {vítimas_criadas} vítimas novas criadas e {visitas_criadas} visitas adicionadas.")
+        if erros:
+            messages.warning(request, f"Ocorreram {len(erros)} erros durante a importação. Detalhes: " + " | ".join(erros))
+        if vítimas_criadas == 0 and visitas_criadas == 0 and not erros:
+            messages.info(request, "Nenhum dado novo foi importado. O arquivo pode estar vazio ou as vítimas já existiam.")
+
+    return render(request, 'importar_dados.html')
+
 # Lista todas as vítimas
 
 
