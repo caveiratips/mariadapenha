@@ -6,7 +6,7 @@ from .views import (
     VisitaListView, VisitaDetailView, VisitaUpdateView, VisitaDeleteView, VisitaCreateView,
     AgressorListView, AgressorCreateView, AgressorUpdateView, AgressorDeleteView, AgressorDetailView, CustomLoginView
 )
-from .views import importar_dados_view
+from .views import importar_dados_view, excluir_tudo_view
 
 urlpatterns = [
     # Home (redirecionando para a lista de vítimas)
@@ -43,4 +43,5 @@ urlpatterns = [
 ]
 urlpatterns += [
     path('importar/', importar_dados_view, name='importar_dados'),
+    path('excluir-tudo/', excluir_tudo_view, name='excluir_tudo'),
 ]

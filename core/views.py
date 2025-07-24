@@ -10,21 +10,22 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 import pandas as pd
 from unidecode import unidecode
 from datetime import datetime
 import re
 
-def get_choice_key(choices, value):
+def get_choice_key(choices, value, default=None):
     """Função auxiliar para encontrar a chave de uma 'choice' a partir do seu valor de exibição."""
-    if not isinstance(value, str):
-        return None
+    if pd.isna(value) or not isinstance(value, str):
+        return default
     
     value_normalized = unidecode(value.strip().lower())
     for key, display_value in choices:
         if unidecode(display_value.lower()) == value_normalized:
             return key
-    return None
+    return default
 
 def clean_float(value):
     """Extrai um valor float de uma string, mesmo que contenha caracteres extras."""
@@ -77,22 +78,22 @@ def importar_dados_view(request):
                         latitude=clean_float(row.iloc[1]),
                         longitude=clean_float(row.iloc[2]),
                         numero_processo=str(row.iloc[3]),
-                        municipio=get_choice_key(Vitima.MUNICIPIOS_PE, row.iloc[4]),
+                        municipio=get_choice_key(Vitima.MUNICIPIOS_PE, row.iloc[4], default='AFOGADOS DA INGAZEIRA'),
                         bairro=str(row.iloc[5]),
                         rua=str(row.iloc[6]),
-                        zona=get_choice_key(Vitima.ZONA_CHOICES, row.iloc[7]),
+                        zona=get_choice_key(Vitima.ZONA_CHOICES, row.iloc[7], default='U'),
                         estado='Pernambuco',
                         nome_vitima=str(row.iloc[9]).strip(),
-                        parentesco=get_choice_key(Vitima.PARENTESCO_CHOICES, row.iloc[10]),
-                        perfil_vitima=get_choice_key(Vitima.PERFIL_VITIMA_CHOICES, row.iloc[11]),
+                        parentesco=get_choice_key(Vitima.PARENTESCO_CHOICES, row.iloc[10], default='OUTRO'),
+                        perfil_vitima=get_choice_key(Vitima.PERFIL_VITIMA_CHOICES, row.iloc[11], default='NAO_INFORMADO'),
                         cpf=str(row.iloc[12]),
                         data=pd.to_datetime(row.iloc[14]).date(),
                         nome_agressor=str(row.iloc[15]),
-                        perfil_agressor=get_choice_key(Vitima.PERFIL_AGRESSOR_CHOICES, row.iloc[16]),
+                        perfil_agressor=get_choice_key(Vitima.PERFIL_AGRESSOR_CHOICES, row.iloc[16], default='NAO_INFORMADO'),
                         historico=str(row.iloc[17]),
-                        classificacao=get_choice_key(Vitima.CLASSIFICACAO_CHOICES, row.iloc[18]),
-                        tipo_agressao=get_choice_key(Vitima.TIPO_AGRESSÃO_CHOICES, row.iloc[19]),
-                        situacao_visita=get_choice_key(vitima_situacao_choices, row.iloc[20])
+                        classificacao=get_choice_key(Vitima.CLASSIFICACAO_CHOICES, row.iloc[18], default='MÉDIO'),
+                        tipo_agressao=get_choice_key(Vitima.TIPO_AGRESSÃO_CHOICES, row.iloc[19], default='FISICA'),
+                        situacao_visita=get_choice_key(vitima_situacao_choices, row.iloc[20], default='ATIVA')
                     )
                     nova_vitima.save()
                     vítimas_criadas += 1
@@ -120,6 +121,16 @@ def importar_dados_view(request):
             messages.info(request, "Nenhum dado novo foi importado. O arquivo pode estar vazio ou as vítimas já existiam.")
 
     return render(request, 'importar_dados.html')
+
+@login_required
+def excluir_tudo_view(request):
+    if request.method == 'POST':
+        # Exclui todas as visitas primeiro
+        Visita.objects.all().delete()
+        # Depois exclui todas as vítimas
+        Vitima.objects.all().delete()
+        messages.success(request, "Todos os dados de vítimas e visitas foram excluídos com sucesso.")
+    return redirect('vitima-list')
 
 # Lista todas as vítimas
 
