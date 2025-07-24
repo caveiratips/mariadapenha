@@ -93,6 +93,7 @@
                             <th>Município</th>
                             <th>Classificação</th>
                             <th>Situação</th>
+                            <th>Agressor Preso</th>
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
@@ -110,7 +111,7 @@
                             </td>
                             <td>{{ vitima.get_municipio_display }}</td>
                             <td>
-                                <span class="badge 
+                                <span class="badge
                                     {% if vitima.classificacao == 'GRAVÍSSIMO' %}bg-danger
                                     {% elif vitima.classificacao == 'GRAVE' %}bg-warning text-dark
                                     {% elif vitima.classificacao == 'MÉDIO' %}bg-primary
@@ -121,6 +122,7 @@
                             <td>
                                 <span class="status-pill">{{ vitima.situacao_visita }}</span>
                             </td>
+                            <td>{{ vitima.get_agressor_preso_display }}</td>
                             <td>
                                 <div class="action-buttons text-center">
                                     <a href="{% url 'vitima-detail' vitima.pk %}" class="btn btn-sm btn-outline-primary" title="Visualizar">
@@ -140,7 +142,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <div class="empty-state">
                                     <i class="bi bi-search fs-1 text-muted mb-3"></i>
                                     <h5>Nenhuma vítima encontrada</h5>
