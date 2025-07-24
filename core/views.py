@@ -140,6 +140,12 @@ class VisitaCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         vitima = get_object_or_404(Vitima, pk=self.kwargs['pk'])
         form.instance.vitima = vitima
+        
+        agressor_preso_status = form.cleaned_data.get('agressor_preso')
+        if agressor_preso_status and vitima.agressor_preso != agressor_preso_status:
+            vitima.agressor_preso = agressor_preso_status
+            vitima.save(update_fields=['agressor_preso'])
+            
         messages.success(self.request, 'Visita cadastrada com sucesso!')
         return super().form_valid(form)
     
@@ -160,6 +166,16 @@ class VisitaUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('visita-detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        agressor_preso_status = form.cleaned_data.get('agressor_preso')
+        vitima = self.object.vitima
+        if agressor_preso_status and vitima.agressor_preso != agressor_preso_status:
+            vitima.agressor_preso = agressor_preso_status
+            vitima.save(update_fields=['agressor_preso'])
+
+        messages.success(self.request, 'Visita atualizada com sucesso!')
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

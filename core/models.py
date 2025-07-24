@@ -66,8 +66,12 @@ class Vitima(models.Model):
         ('ECONOMICA', 'Econômica'),
     ]
     
-    
-
+    AGRESSOR_PRESO_CHOICES = [
+        ('SIM', 'Sim'),
+        ('NAO', 'Não'),
+        ('NAO_INFORMADO', 'Não Informado'),
+    ]
+ 
     # Campos do modelo
     data = models.DateField(verbose_name="Data do Cadastro")
     data_inicial_medida = models.DateField(verbose_name="Data Inicial da Medida", null=True, blank=True)
@@ -91,6 +95,12 @@ class Vitima(models.Model):
     classificacao = models.CharField(max_length=10, choices=CLASSIFICACAO_CHOICES)
     tipo_agressao = models.CharField(max_length=15, choices=TIPO_AGRESSÃO_CHOICES)
     situacao_visita = models.CharField(max_length=7, choices=[('ATIVA', 'Ativa'), ('INATIVA', 'Inativa')], default='ATIVA')
+    agressor_preso = models.CharField(
+        max_length=15,
+        choices=AGRESSOR_PRESO_CHOICES,
+        default='NAO_INFORMADO',
+        verbose_name='Agressor Preso?'
+    )
     data_registro = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(blank=True, null=True)
     

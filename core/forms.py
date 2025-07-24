@@ -3,6 +3,13 @@ from .models import Visita, Vitima, Agressor  # 🔹 Importando corretamente ape
 from unidecode import unidecode
 
 class VisitaForm(forms.ModelForm):
+    agressor_preso = forms.ChoiceField(
+        choices=Vitima.AGRESSOR_PRESO_CHOICES,
+        required=False,
+        label='Agressor Preso?',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
     class Meta:
         model = Visita
         fields = ['data', 'historico', 'classificacao', 'situacao', 'descumprimento_medida', 'mike', 'desfecho']
@@ -17,7 +24,15 @@ class VisitaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        vitima = kwargs.pop('vitima', None)
         super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            vitima = self.instance.vitima
+
+        if vitima:
+            self.fields['agressor_preso'].initial = vitima.agressor_preso
+        
         # Lógica para mostrar/ocultar campos 'mike' e 'desfecho'
         # e definir sua obrigatoriedade com base em 'descumprimento_medida'
         
@@ -51,7 +66,7 @@ class VitimaForm(forms.ModelForm):
             'data', 'data_inicial_medida', 'validade_da_medida', 'latitude', 'longitude', 'numero_processo',
             'municipio', 'bairro', 'rua', 'zona', 'nome_vitima', 'data_nascimento', 'parentesco', 'outro_parentesco',
             'perfil_vitima', 'cpf', 'nome_agressor', 'perfil_agressor', 'historico',
-            'classificacao', 'tipo_agressao', 'situacao_visita'
+            'classificacao', 'tipo_agressao', 'situacao_visita', 'agressor_preso'
         ]
         widgets = {
             'data': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
