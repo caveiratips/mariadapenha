@@ -58,56 +58,69 @@ def importar_dados_view(request):
 
         for index, row in df.iterrows():
             try:
-                # --- Mapeamento e Limpeza dos Dados ---
-                nome_vitima_raw = row.iloc[9]
-                if pd.isna(nome_vitima_raw):
-                    continue # Pula linha se o nome da vítima estiver vazio
+                # --- Validação e Limpeza de Dados ---
+                numero_processo_raw = row.iloc[3]
+                if pd.isna(numero_processo_raw):
+                    erros.append(f"Linha {index + 2}: Número do processo está vazio.")
+                    continue
                 
-                nome_vitima_normalized = unidecode(str(nome_vitima_raw).strip().lower())
+                # Limpeza rigorosa do número do processo para garantir unicidade
+                numero_processo = re.sub(r'\D', '', str(numero_processo_raw))
+                if not numero_processo:
+                    erros.append(f"Linha {index + 2}: Número do processo inválido após limpeza.")
+                    continue
 
-                # --- Lógica Principal: Vítima ou Visita? ---
-                vitima_existente = Vitima.objects.filter(nome_vitima__iexact=nome_vitima_normalized).first()
+                # Validação de data
+                try:
+                    data_visita = pd.to_datetime(row.iloc[14]).date()
+                except (ValueError, pd.errors.OutOfBoundsDatetime):
+                    erros.append(f"Linha {index + 2}: Formato de data inválido ('{row.iloc[14]}').")
+                    continue
 
-                if not vitima_existente:
-                    # Cria uma nova Vítima
-                    
-                    # As opções para situacao_visita no modelo Vitima são definidas inline
-                    vitima_situacao_choices = [('ATIVA', 'Ativa'), ('INATIVA', 'Inativa')]
+                # --- Lógica Principal com update_or_create ---
+                vitima_situacao_choices = [('ATIVA', 'Ativa'), ('INATIVA', 'Inativa')]
+                
+                # Dados que serão usados para criar ou ATUALIZAR a vítima
+                vitima_defaults = {
+                    'latitude': clean_float(row.iloc[1]),
+                    'longitude': clean_float(row.iloc[2]),
+                    'municipio': get_choice_key(Vitima.MUNICIPIOS_PE, row.iloc[4], default='AFOGADOS DA INGAZEIRA'),
+                    'bairro': str(row.iloc[5]),
+                    'rua': str(row.iloc[6]),
+                    'zona': get_choice_key(Vitima.ZONA_CHOICES, row.iloc[7], default='U'),
+                    'estado': 'Pernambuco',
+                    'nome_vitima': str(row.iloc[9]).strip(),
+                    'parentesco': get_choice_key(Vitima.PARENTESCO_CHOICES, row.iloc[10], default='OUTRO'),
+                    'perfil_vitima': get_choice_key(Vitima.PERFIL_VITIMA_CHOICES, row.iloc[11], default='NAO_INFORMADO'),
+                    'cpf': str(row.iloc[12]),
+                    'data': data_visita,
+                    'nome_agressor': str(row.iloc[15]),
+                    'perfil_agressor': get_choice_key(Vitima.PERFIL_AGRESSOR_CHOICES, row.iloc[16], default='NAO_INFORMADO'),
+                    'historico': str(row.iloc[17]),
+                    'classificacao': get_choice_key(Vitima.CLASSIFICACAO_CHOICES, row.iloc[18], default='MÉDIO'),
+                    'tipo_agressao': get_choice_key(Vitima.TIPO_AGRESSÃO_CHOICES, row.iloc[19], default='FISICA'),
+                    'situacao_visita': get_choice_key(vitima_situacao_choices, row.iloc[20], default='ATIVA')
+                }
 
-                    nova_vitima = Vitima(
-                        latitude=clean_float(row.iloc[1]),
-                        longitude=clean_float(row.iloc[2]),
-                        numero_processo=str(row.iloc[3]),
-                        municipio=get_choice_key(Vitima.MUNICIPIOS_PE, row.iloc[4], default='AFOGADOS DA INGAZEIRA'),
-                        bairro=str(row.iloc[5]),
-                        rua=str(row.iloc[6]),
-                        zona=get_choice_key(Vitima.ZONA_CHOICES, row.iloc[7], default='U'),
-                        estado='Pernambuco',
-                        nome_vitima=str(row.iloc[9]).strip(),
-                        parentesco=get_choice_key(Vitima.PARENTESCO_CHOICES, row.iloc[10], default='OUTRO'),
-                        perfil_vitima=get_choice_key(Vitima.PERFIL_VITIMA_CHOICES, row.iloc[11], default='NAO_INFORMADO'),
-                        cpf=str(row.iloc[12]),
-                        data=pd.to_datetime(row.iloc[14]).date(),
-                        nome_agressor=str(row.iloc[15]),
-                        perfil_agressor=get_choice_key(Vitima.PERFIL_AGRESSOR_CHOICES, row.iloc[16], default='NAO_INFORMADO'),
-                        historico=str(row.iloc[17]),
-                        classificacao=get_choice_key(Vitima.CLASSIFICACAO_CHOICES, row.iloc[18], default='MÉDIO'),
-                        tipo_agressao=get_choice_key(Vitima.TIPO_AGRESSÃO_CHOICES, row.iloc[19], default='FISICA'),
-                        situacao_visita=get_choice_key(vitima_situacao_choices, row.iloc[20], default='ATIVA')
-                    )
-                    nova_vitima.save()
+                vitima, created = Vitima.objects.update_or_create(
+                    numero_processo=numero_processo,
+                    defaults=vitima_defaults
+                )
+
+                if created:
                     vítimas_criadas += 1
-                else:
-                    # Cria uma nova Visita para a vítima existente
-                    nova_visita = Visita(
-                        vitima=vitima_existente,
-                        data=pd.to_datetime(row.iloc[14]).date(),
-                        situacao=get_choice_key(Visita.SITUACAO_CHOICES, row.iloc[20]),
-                        classificacao=get_choice_key(Visita.CLASSIFICACAO_CHOICES, row.iloc[18]),
-                        historico=str(row.iloc[17])
-                    )
-                    nova_visita.save()
-                    visitas_criadas += 1
+                
+                # --- Cria a Visita associada ---
+                classificacao_visita = get_choice_key(Visita.CLASSIFICACAO_CHOICES, row.iloc[18], default='MÉDIO')
+                
+                Visita.objects.create(
+                    vitima=vitima,
+                    data=data_visita,
+                    situacao=get_choice_key(Visita.SITUACAO_CHOICES, row.iloc[20], default='Ativa'),
+                    classificacao=classificacao_visita,
+                    historico=str(row.iloc[17])
+                )
+                visitas_criadas += 1
 
             except Exception as e:
                 erros.append(f"Linha {index + 2}: {e}")
