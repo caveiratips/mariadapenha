@@ -1,21 +1,27 @@
 :root {
-    --primary-color: #42a5f5; /* Azul um pouco mais claro para melhor contraste no escuro */
-    --secondary-color: #9ccc65; /* Verde um pouco mais claro */
-    --dark-color: #212529; /* Cor de fundo padrão do Bootstrap dark */
-    --light-color: #dee2e6; /* Cor de texto clara para fundos escuros */
+    --bs-primary-rgb: 66, 165, 245; /* Azul primário em RGB para o Bootstrap */
+    --primary-color: #42a5f5;
+    --secondary-color: #9ccc65;
     --sidebar-width: 250px;
     --sidebar-collapsed-width: 80px;
     --transition-speed: 0.3s;
+
+    /* Paleta de Cores Dark Suave */
+    --dark-bg: #1a1d20;         /* Fundo principal, um preto bem suave */
+    --dark-card-bg: #2c3034;    /* Fundo para cards, inputs e outros elementos */
+    --dark-border: #40454a;     /* Cor da borda sutil */
+    --dark-text: #dee2e6;       /* Cor de texto principal */
+    --dark-text-muted: #868e96; /* Cor de texto secundário/muted */
 }
 
 body {
     font-family: 'Roboto', Arial, sans-serif;
-    background-color: var(--dark-color); /* Fundo escuro para o body */
-    color: var(--light-color); /* Texto claro para o body */
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
     min-height: 100vh;
 }
 
-/* Wrapper */
+/* === Wrapper & Layout === */
 .wrapper {
     display: flex;
     width: 100%;
@@ -23,26 +29,21 @@ body {
     align-items: stretch;
 }
 
-/* Sidebar */
+.content {
+    width: 100%;
+    min-height: 100vh;
+    transition: all var(--transition-speed) ease;
+}
+
+/* === Sidebar === */
 .sidebar {
     min-width: var(--sidebar-width);
     max-width: var(--sidebar-width);
-    background: #1c1f23; /* Um tom de escuro ligeiramente diferente para a sidebar */
+    background: var(--dark-card-bg);
     color: #fff;
     transition: all var(--transition-speed) ease;
     z-index: 1000;
-}
-
-/* Estilos para logos */
-.sidebar-logo {
-    max-width: 60px;
-    max-height: 60px;
-    margin-right: 10px;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
+    border-right: 1px solid var(--dark-border);
 }
 
 .sidebar.active {
@@ -51,239 +52,140 @@ body {
 
 .sidebar-header {
     padding: 20px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
+.sidebar-logo {
+    max-width: 50px;
+    height: auto;
+    margin-right: 15px;
+}
+
 .sidebar-header h3 {
     margin: 0;
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
 }
 
 .sidebar ul li a {
-    padding: 12px 20px;
+    padding: 14px 20px;
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: #fff;
+    color: var(--dark-text);
     transition: all var(--transition-speed) ease;
+    border-left: 4px solid transparent;
 }
 
 .sidebar ul li a:hover {
-    background: #343a40; /* Hover um pouco mais claro */
+    background: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
 }
 
-.sidebar ul li.active a {
-    background: var(--primary-color);
+.sidebar ul li.active > a {
+    background: rgba(var(--bs-primary-rgb), 0.2);
+    color: var(--primary-color);
+    font-weight: 600;
+    border-left-color: var(--primary-color);
 }
 
 .sidebar ul li a i {
-    margin-right: 10px;
-    font-size: 1.2rem;
+    margin-right: 15px;
+    font-size: 1.3rem;
+    width: 25px;
+    text-align: center;
 }
 
-/* Content */
-.content {
-    width: 100%;
-    min-height: 100vh;
-    transition: all var(--transition-speed) ease;
-}
-
-/* Navbar */
+/* === Navbar === */
 .navbar {
-    padding: 15px 10px;
-    /* background: #fff !important; <- Removido para permitir que data-bs-theme controle */
-    border: none;
-    border-radius: 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    background: var(--dark-card-bg);
+    border-bottom: 1px solid var(--dark-border);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 #sidebarCollapse {
+    background: transparent;
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+}
+#sidebarCollapse:hover {
     background: var(--primary-color);
-    border: none;
-}
-
-/* Form styles */
-.form-control:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+    color: #fff;
 }
 
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background-color: #0d62b3;
-    border-color: #0d62b3;
-}
-
-/* Table styles */
-.table {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.table thead th {
-    /* background-color: #f8f9fa; <- Bootstrap dark theme cuidará disso */
-    border-bottom: 2px solid #495057; /* Borda mais escura para a tabela */
-}
-
-/* Card styles */
+/* === Cards === */
 .card {
     border-radius: 10px;
-    border: 1px solid #495057; /* Adiciona uma borda sutil aos cards no tema escuro */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Sombra um pouco mais pronunciada */
+    border: 1px solid var(--dark-border);
+    background-color: var(--dark-card-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .card-header {
-    /* background-color: #fff; <- Bootstrap dark theme cuidará disso */
-    border-bottom: 1px solid #495057; /* Borda mais escura para o cabeçalho do card */
-    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--dark-border);
+    padding: 1rem 1.5rem;
 }
 
-/* Login page */
-.login-card {
-    margin-top: 2rem;
-    background-color: #2c3034; /* Fundo escuro para o card de login */
-}
-
-.login-header h2 {
-    color: var(--light-color); /* Texto claro para o cabeçalho do login */
-}
-
-.login-header h4 {
-    color: var(--primary-color);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .sidebar {
-        margin-left: calc(-1 * var(--sidebar-width));
-    }
-    
-    .sidebar.active {
-        margin-left: 0;
-        position: fixed;
-        height: 100%;
-    }
-    
-    #content {
-        width: 100%;
-    }
-}
-
-/* Lists and details styling */
-.list-group-item {
-    border-left: none;
-    border-right: none;
-    padding: 15px 20px;
-}
-
-.detail-card {
-    margin-bottom: 2rem;
-}
-
-.detail-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 10px 10px 0 0;
-}
-
-.detail-body {
-    padding: 20px;
-    /* background-color: white; <- Removido para herdar do card no tema escuro */
-    border-radius: 0 0 10px 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Pode ser ajustado se necessário */
-}
-
-/* Badges and labels */
-.status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: normal;
-}
-
-/* Alerts */
-.alert {
-    border-radius: 10px;
-    border: none;
-}
-
-/* Estilos para a página de listagem de vítimas */
-.dashboard-header {
-    margin-bottom: 1.5rem;
-}
-
-.page-title {
-    font-size: 1.75rem;
+.card-header h5, .card-header h4 {
+    margin-bottom: 0;
     font-weight: 600;
-    margin-bottom: 0.3rem;
-    color: var(--light-color); /* Ajustado para tema escuro */
 }
 
-.filter-card .card {
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    /* background-color: #2c3034;  Bootstrap dark theme deve cuidar do card */
+/* === Formulários === */
+.form-control, .form-select {
+    background-color: #3a4045; /* Tom um pouco mais claro para inputs */
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
 }
-
-.filter-card .form-control,
-.filter-card .form-select {
-    padding: 0.6rem 0.85rem;
-    /* border-color: #e2e8f0; Bootstrap dark theme cuidará disso */
-    /* color: var(--light-color); Bootstrap dark theme cuidará disso */
-    /* background-color: #343a40; Bootstrap dark theme cuidará disso */
-}
-
-.filter-card .form-control:focus,
-.filter-card .form-select:focus {
+.form-control:focus, .form-select:focus {
+    background-color: #3a4045;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+    color: var(--dark-text);
+}
+.form-floating > label {
+    color: var(--dark-text-muted);
 }
 
-.filter-card .input-group-text {
-    /* border-color: #e2e8f0; Bootstrap dark theme cuidará disso */
-    /* background-color: #343a40; Bootstrap dark theme cuidará disso */
-}
-
-.table-container .card {
+/* === Tabelas === */
+.table {
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    margin-bottom: 1.5rem;
 }
-
-.custom-table thead th {
+.table > :not(caption) > * > * {
+    background-color: transparent; /* Deixa o card controlar o fundo */
+}
+.table-hover > tbody > tr:hover > * {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+.table thead th {
+    border-bottom: 2px solid var(--dark-border);
     font-weight: 600;
-    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    color: var(--light-color); /* Texto claro para cabeçalho da tabela */
+    font-size: 0.85rem;
 }
-
 .custom-table tbody td {
-    padding: 1rem 0.75rem;
-    border-bottom: 1px solid #343a40; /* Borda mais escura para linhas da tabela */
+    border-bottom: 1px solid var(--dark-border);
 }
-
 .custom-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.custom-table tbody tr:hover {
-    background-color: rgba(var(--bs-primary-rgb), 0.15); /* Hover com cor primária e mais visível */
+/* === Componentes Específicos === */
+.page-title {
+    font-weight: 600;
+    color: var(--dark-text);
 }
 
-/* Avatar para iniciais */
 .avatar-circle {
     width: 36px;
     height: 36px;
@@ -295,73 +197,143 @@ body {
     font-size: 1rem;
 }
 
-/* Status pills */
 .status-pill {
     padding: 0.35rem 0.7rem;
     border-radius: 20px;
     font-size: 0.85rem;
-    background-color: #343a40; /* Fundo escuro para status pill */
-    color: var(--light-color); /* Texto claro para status pill */
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
     display: inline-block;
 }
 
-/* Botões de ação */
 .action-buttons .btn {
-    padding: 0.3rem 0.5rem;
     margin: 0 0.1rem;
     border-radius: 6px;
 }
 
-.action-buttons .btn:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-}
-
-/* Estado vazio */
 .empty-state {
-    padding: 2rem 1rem;
+    padding: 3rem 1rem;
+    text-align: center;
 }
-
 .empty-state i {
-    font-size: 3rem;
-    color: #cbd5e0;
+    font-size: 3.5rem;
+    color: var(--dark-text-muted);
+}
+.empty-state h5 {
+    margin-top: 1rem;
+    font-weight: 600;
 }
 
-.pagination {
-    border-radius: 10px;
-    overflow: hidden;
-}
-
+/* === Paginação === */
 .pagination .page-link {
-    padding: 0.6rem 1rem;
-    border: none;
-    color: var(--primary-color);
-    background-color: #343a40; /* Fundo para links de paginação */
+    border: 1px solid var(--dark-border);
+    background-color: var(--dark-card-bg);
 }
-
 .pagination .page-item.active .page-link {
     background-color: var(--primary-color);
-    color: white;
+    border-color: var(--primary-color);
 }
-
 .pagination .page-item.disabled .page-link {
-    background-color: #212529; /* Fundo mais escuro para desabilitado */
-    color: #6c757d;
+    background-color: transparent;
+    border-color: var(--dark-border);
 }
 
-/* Responsivo */
-@media (max-width: 767.98px) {
-    .action-buttons {
-        display: flex;
-        justify-content: center;
+/* === Login Page === */
+.login-card {
+    background-color: var(--dark-card-bg);
+}
+.login-header h2 {
+    color: var(--dark-text);
+}
+.login-header h4 {
+    color: var(--primary-color);
+}
+
+/* === Responsividade === */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: calc(-1 * var(--sidebar-width));
+        position: fixed;
+        height: 100%;
     }
-    
-    .custom-table tbody td {
-        padding: 0.75rem 0.5rem;
+    .sidebar.active {
+        margin-left: 0;
     }
-    
     .page-title {
         font-size: 1.5rem;
     }
+}
+
+/* Flatpickr Dark Theme */
+.flatpickr-calendar {
+    background: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    width: 307.875px;
+}
+.flatpickr-months .flatpickr-month {
+    color: var(--dark-text);
+    fill: var(--dark-text);
+}
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    color: var(--dark-text);
+    fill: var(--dark-text);
+}
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: var(--primary-color);
+}
+span.flatpickr-weekday {
+    color: var(--dark-text-muted);
+}
+.flatpickr-day {
+    color: var(--dark-text);
+}
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+    background: #3a4045;
+    border-color: #3a4045;
+}
+.flatpickr-day.today {
+    border-color: var(--primary-color);
+}
+.flatpickr-day.today:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+.flatpickr-day.inRange {
+    background: rgba(var(--bs-primary-rgb), 0.2);
+    border-color: transparent;
+    box-shadow: -5px 0 0 rgba(var(--bs-primary-rgb), 0.2), 5px 0 0 rgba(var(--bs-primary-rgb), 0.2);
+}
+.flatpickr-day.disabled,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: rgba(var(--dark-text), 0.3);
+}
+.flatpickr-time {
+    border-top: 1px solid var(--dark-border);
+}
+.flatpickr-time .numInput,
+.flatpickr-time .numInputWrapper,
+.flatpickr-time .flatpickr-am-pm {
+    color: var(--dark-text);
+}
+.flatpickr-time .numInput:hover,
+.flatpickr-time .flatpickr-am-pm:hover {
+    background: #3a4045;
+}
+.flatpickr-time .arrowUp:after {
+    border-bottom-color: var(--dark-text);
+}
+.flatpickr-time .arrowDown:after {
+    border-top-color: var(--dark-text);
 }
