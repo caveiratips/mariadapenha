@@ -88,7 +88,7 @@ class Vitima(models.Model):
     data_nascimento = models.DateField(verbose_name="Data de Nascimento", null=True, blank=True)
     parentesco = models.CharField(max_length=15, choices=PARENTESCO_CHOICES)
     perfil_vitima = models.CharField(max_length=15, choices=PERFIL_VITIMA_CHOICES)
-    cpf = models.CharField(max_length=11)
+    cpf = models.CharField(max_length=14, unique=True, null=True, blank=True, help_text="CPF deve ser único. Deixe em branco se não houver.")
     nome_agressor = models.CharField(max_length=100)
     perfil_agressor = models.CharField(max_length=15, choices=PERFIL_AGRESSOR_CHOICES)
     historico = models.TextField(verbose_name='Resumo dos Fatos')
