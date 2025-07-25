@@ -29,51 +29,48 @@ class Command(BaseCommand):
         cpf_map = {}
         nome_map = {}
         
+        # Placeholders a serem ignorados para fins de mapeamento
+        PLACEHOLDER_CPFS = {'00000000000'}
+        PLACEHOLDER_NAMES = {'nan', ''}
+
         vitimas_a_processar = Vitima.objects.all().order_by('id')
         total_vitimas = vitimas_a_processar.count()
         self.stdout.write(f'Encontradas {total_vitimas} vítimas para processar.')
 
         for vitima in vitimas_a_processar:
-            # Limpa e normaliza os dados da vítima atual
             cpf_limpo = limpar_cpf(vitima.cpf)
             nome_normalizado = normalizar_nome(vitima.nome_vitima)
 
             vitima_mestre = None
-            chave_duplicata = None
-            tipo_duplicata = None
 
-            # 1. Tenta encontrar duplicata pelo CPF (mais confiável)
-            if cpf_limpo and len(cpf_limpo) == 11:
+            # 1. Tenta encontrar um mestre pelo CPF, se for um CPF válido
+            if cpf_limpo and len(cpf_limpo) == 11 and cpf_limpo not in PLACEHOLDER_CPFS:
                 if cpf_limpo in cpf_map:
                     vitima_mestre = cpf_map[cpf_limpo]
-                    chave_duplicata = cpf_limpo
-                    tipo_duplicata = "CPF"
-                else:
-                    cpf_map[cpf_limpo] = vitima
 
-            # 2. Se não encontrou por CPF, tenta pelo nome normalizado
-            if not vitima_mestre and nome_normalizado:
+            # 2. Se não encontrou por CPF, tenta pelo nome, se for um nome válido
+            if not vitima_mestre and nome_normalizado and nome_normalizado not in PLACEHOLDER_NAMES:
                 if nome_normalizado in nome_map:
                     vitima_mestre = nome_map[nome_normalizado]
-                    chave_duplicata = nome_normalizado
-                    tipo_duplicata = "Nome"
-                else:
-                    nome_map[nome_normalizado] = vitima
             
-            # Se encontramos uma duplicata (vitima_mestre existe e é diferente da vítima atual)
+            # Se um mestre foi encontrado, esta vítima é uma duplicata e deve ser unificada.
             if vitima_mestre and vitima_mestre.id != vitima.id:
                 self.stdout.write(self.style.WARNING(
-                    f'Unificando duplicata: ID {vitima.id} ({vitima.nome_vitima}) será unificada com a Mestre ID {vitima_mestre.id} ({vitima_mestre.nome_vitima}) '
-                    f'baseado em {tipo_duplicata}: "{chave_duplicata}"'
+                    f'Unificando duplicata: ID {vitima.id} ({vitima.nome_vitima}) será unificada com a Mestre ID {vitima_mestre.id} ({vitima_mestre.nome_vitima})'
                 ))
 
-                # Move as visitas da vítima duplicada para a vítima mestre
-                visitas_movidas = Visita.objects.filter(vitima=vitima).update(vitima=vitima_mestre)
-                if visitas_movidas > 0:
-                    self.stdout.write(self.style.SUCCESS(f'  -> {visitas_movidas} visita(s) movida(s).'))
-
-                # Exclui o registro da vítima duplicada
+                # Move as visitas e outros relacionamentos
+                Visita.objects.filter(vitima=vitima).update(vitima=vitima_mestre)
+                
+                vitima_id_deletada = vitima.id
                 vitima.delete()
-                self.stdout.write(self.style.SUCCESS(f'  -> Vítima duplicada ID {vitima.id} excluída.'))
+                self.stdout.write(self.style.SUCCESS(f'  -> Vítima duplicada ID {vitima_id_deletada} excluída.'))
+            
+            # Se não é uma duplicata, ela se torna um mestre para suas chaves.
+            else:
+                if cpf_limpo and len(cpf_limpo) == 11 and cpf_limpo not in PLACEHOLDER_CPFS:
+                    cpf_map[cpf_limpo] = vitima
+                if nome_normalizado and nome_normalizado not in PLACEHOLDER_NAMES:
+                    nome_map[nome_normalizado] = vitima
 
         self.stdout.write(self.style.SUCCESS('Processo de limpeza concluído com sucesso!'))
