@@ -79,7 +79,7 @@ def importar_dados_view(request):
                     continue
 
                 # --- Lógica Principal com update_or_create ---
-                vitima_situacao_choices = [('ATIVA', 'Ativa'), ('INATIVA', 'Inativa')]
+                vitima_situacao_choices = [('ATIVA', 'Ativa'), ('INATIVA', 'Inativa')] # Mantido para compatibilidade com get_choice_key
                 
                 # Dados que serão usados para criar ou ATUALIZAR a vítima
                 vitima_defaults = {
@@ -117,7 +117,7 @@ def importar_dados_view(request):
                 Visita.objects.create(
                     vitima=vitima,
                     data=data_visita,
-                    situacao=get_choice_key(Visita.SITUACAO_CHOICES, row.iloc[20], default='Ativa'),
+                    situacao=get_choice_key(Visita.SITUACAO_CHOICES, row.iloc[20], default='ATIVA'),
                     classificacao=classificacao_visita,
                     historico=str(row.iloc[17])
                 )

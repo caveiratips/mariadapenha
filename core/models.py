@@ -131,8 +131,8 @@ class Visita(models.Model):
     ]
 
     SITUACAO_CHOICES = [
-        ('Ativa', 'Ativa'),
-        ('Inativa', 'Inativa'),
+        ('ATIVA', 'Ativa'),
+        ('INATIVA', 'Inativa'),
     ]
     
     DESCUMPRIMENTO_CHOICES = [
@@ -183,7 +183,7 @@ class Visita(models.Model):
     situacao = models.CharField(
         max_length=7,
         choices=SITUACAO_CHOICES,
-        default='Ativa',
+        default='ATIVA',
         verbose_name='Situação'
     )
     
